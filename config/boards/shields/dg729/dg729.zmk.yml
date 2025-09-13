@@ -6,6 +6,3 @@ url: https://github.com/myst729
 requires: [pro_micro]
 features:
   - keys
-  - encoder
-  - trackpoint
-  - underglow

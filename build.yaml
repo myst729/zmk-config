@@ -20,6 +20,5 @@
 include:
   - board: nrfmicro_13
     shield: dg729
-
-  - board: nrfmicro_13
-    shield: settings_reset
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y

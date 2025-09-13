@@ -1,36 +1,11 @@
-# TrackPoint RGB Encoder
+# 3x3
 
 ## matrix
 
-COL1 0.03
-COL2 0.28
-COL3 1.11
-COL4 1.06
-COL5 1.13
-COL6 0.26
-COL7 0.09
+COL1 0.15
+COL2 0.17
 COL8 0.20
-COL9 0.22
-COL10 1.04
-COL11 0.24
-COL12 1.00
 
 ROW1 0.30
-ROW2 0.29
-ROW3 0.31
-ROW4 0.10
-
-## encoder
-
-ENC1 0.15
-ENC2 0.17
-
-## underglow
-
-RGB 0.05
-
-## trackpoint
-
-TP_DATA 0.07
-TP_CLOCK 0.13
-// TP_RST
+ROW2 0.31
+ROW3 0.29

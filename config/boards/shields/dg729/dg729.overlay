@@ -1,21 +1,24 @@
-#include <dt-bindings/led/led.h>
 #include <dt-bindings/zmk/matrix_transform.h>
-
-#define EC11_ENCODER_PIN_A <&gpio0 17 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>
-#define EC11_ENCODER_PIN_B <&gpio0 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>
-
-#define WS2812_RGB_UNDERGLOW_PIN <NRF_PSEL(SPIM_MOSI, 0, 5)>
-#define WS2812_RGB_UNDERGLOW_LEDS 5
-
-#define MOUSE_PS2_PIN_SCL_PRO_MICRO <&gpio0 13 GPIO_ACTIVE_HIGH>
-#define MOUSE_PS2_PIN_SDA_PRO_MICRO <&gpio0 7  GPIO_ACTIVE_HIGH>
-// #define MOUSE_PS2_PIN_RST_PRO_MICRO <&gpio0 14 GPIO_ACTIVE_HIGH>
+#include <physical_layouts.dtsi>
 
 / {
-  chosen {
-    zmk,kscan = &kscan0;
-    zmk,matrix-transform = &default_transform;
-    zmk,underglow = &led_strip;
+
+  physical_layout0: physical_layout_0 {
+    compatible = "zmk,physical-layout";
+    display-name = "3x3 Layout";
+    transform = <&default_transform>;
+    kscan = <&kscan0>;
+    keys  //                 w   h   x   y   rot rx ry
+      = <&key_physical_attrs 100 100   0   0   0  0  0>
+      , <&key_physical_attrs 100 100 100   0   0  0  0>
+      , <&key_physical_attrs 100 100 200   0   0  0  0>
+      , <&key_physical_attrs 100 100   0 100   0  0  0>
+      , <&key_physical_attrs 100 100 100 100   0  0  0>
+      , <&key_physical_attrs 100 100 200 100   0  0  0>
+      , <&key_physical_attrs 100 100   0 200   0  0  0>
+      , <&key_physical_attrs 100 100 100 200   0  0  0>
+      , <&key_physical_attrs 100 100 200 200   0  0  0>
+      ;
   };
 
   kscan0: kscan {
@@ -24,106 +27,25 @@
     diode-direction = "col2row";
     row-gpios
       = <&gpio0 30 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-      , <&gpio0 29 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
       , <&gpio0 31 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
-      , <&gpio0 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+      , <&gpio0 29 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
       ;
     col-gpios
-      = <&gpio0 3  GPIO_ACTIVE_HIGH>
-      , <&gpio0 28 GPIO_ACTIVE_HIGH>
-      , <&gpio1 11 GPIO_ACTIVE_HIGH>
-      , <&gpio1 6  GPIO_ACTIVE_HIGH>
-      , <&gpio1 13 GPIO_ACTIVE_HIGH>
-      , <&gpio0 26 GPIO_ACTIVE_HIGH>
-      , <&gpio0 9  GPIO_ACTIVE_HIGH>
+      = <&gpio0 15 GPIO_ACTIVE_HIGH>
+      , <&gpio0 17 GPIO_ACTIVE_HIGH>
       , <&gpio0 20 GPIO_ACTIVE_HIGH>
-      , <&gpio0 22 GPIO_ACTIVE_HIGH>
-      , <&gpio1 4  GPIO_ACTIVE_HIGH>
-      , <&gpio0 24 GPIO_ACTIVE_HIGH>
-      , <&gpio1 0  GPIO_ACTIVE_HIGH>
       ;
   };
 
   default_transform: keymap_transform_0 {
     compatible = "zmk,matrix-transform";
-    columns = <12>;
-    rows = <4>;
+    columns = <3>;
+    rows = <3>;
     map = <
-      RC(0,0) RC(0,1) RC(0,2) RC(0,3) RC(0,4) RC(0,5) RC(0,6) RC(0,7) RC(0,8) RC(0,9) RC(0,10) RC(0,11)
-      RC(1,0) RC(1,1) RC(1,2) RC(1,3) RC(1,4) RC(1,5) RC(1,6) RC(1,7) RC(1,8) RC(1,9) RC(1,10) RC(1,11) RC(3,8)
-      RC(2,0) RC(2,1) RC(2,2) RC(2,3) RC(2,4) RC(2,5) RC(2,6) RC(2,7) RC(2,8) RC(2,9) RC(2,10) RC(2,11)
-      RC(3,0) RC(3,1) RC(3,2)         RC(3,3) RC(3,6)         RC(3,7)         RC(3,9) RC(3,10) RC(3,11)
+      RC(0,0) RC(0,1) RC(0,2)
+      RC(1,0) RC(1,1) RC(1,2)
+      RC(2,0) RC(2,1) RC(2,2)
     >;
   };
 
-  single_encoder: single_encoder {
-    label = "EC11_ENCODER";
-    compatible = "alps,ec11";
-    status = "okay";
-    a-gpios = EC11_ENCODER_PIN_A;
-    b-gpios = EC11_ENCODER_PIN_B;
-    steps = <80>;
-  };
-
-  sensors: sensors {
-    compatible = "zmk,keymap-sensors";
-    status = "okay";
-    sensors = <&single_encoder>;
-    triggers-per-rotation = <20>;
-  };
-
-  gpio_ps2: gpio_ps2 {
-    compatible = "gpio-ps2";
-    status = "okay";
-    scl-gpios = MOUSE_PS2_PIN_SCL_PRO_MICRO;
-    sda-gpios = MOUSE_PS2_PIN_SDA_PRO_MICRO;
-  };
-
-  mouse_ps2: mouse_ps2 {
-    compatible = "zmk,mouse-ps2";
-    status = "okay";
-    ps2-device = <&gpio_ps2>;
-#ifdef MOUSE_PS2_PIN_RST_PRO_MICRO
-    rst-gpios = MOUSE_PS2_PIN_RST_PRO_MICRO;
-#endif
-  };
-};
-
-&pinctrl {
-  spi3_default: spi3_default {
-    group1 {
-      psels = WS2812_RGB_UNDERGLOW_PIN;
-    };
-  };
-
-  spi3_sleep: spi3_sleep {
-    group1 {
-      psels = WS2812_RGB_UNDERGLOW_PIN;
-      low-power-enable;
-    };
-  };
-};
-
-&spi3 {
-  compatible = "nordic,nrf-spim";
-  status = "okay";
-  pinctrl-0 = <&spi3_default>;
-  pinctrl-1 = <&spi3_sleep>;
-  pinctrl-names = "default", "sleep";
-
-  led_strip: ws2812@0 {
-    compatible = "worldsemi,ws2812-spi";
-    /* SPI */
-    reg = <0>; /* ignored, but necessary for SPI bindings */
-    spi-max-frequency = <4000000>;
-    /* WS2812 */
-    chain-length = <WS2812_RGB_UNDERGLOW_LEDS>; /* arbitrary; change at will */
-    spi-one-frame = <0x70>;
-    spi-zero-frame = <0x40>;
-    color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
-  };
-};
-
-&gpiote {
-  interrupts = < 6 0 >;
 };
